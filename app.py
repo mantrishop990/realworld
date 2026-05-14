@@ -72,7 +72,7 @@ def check():
             remark = str(e)
 
         results.append([mobile, status, balance, remark])
-        time.sleep(3 if use_proxy else 2)
+        time.sleep(5 if use_proxy else 2)
 
     return jsonify({
         "status": "done",
