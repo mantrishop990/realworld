@@ -40,7 +40,7 @@ def check():
 
         status = "ERROR"
         balance = "-"
-        remark = ""
+        remark = "Unknown Error"
 
         try:
             r = requests.post(BASE + "login", params=params, headers=headers, timeout=12)
@@ -51,9 +51,10 @@ def check():
                     balance = res.get("obj", {}).get("balance", 0)
                     status = "✅ LIVE"
                     live += 1
+                    remark = "Success"
                 else:
                     status = "❌ DEAD"
-                    remark = res.get("resMsg", "Unknown")
+                    remark = res.get("resMsg", "Unknown error")
             else:
                 status = "❌ DEAD"
                 remark = f"HTTP {r.status_code}"
