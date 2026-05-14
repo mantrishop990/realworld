@@ -25,6 +25,7 @@ def check():
     for line in combos:
         if not line or ':' not in line:
             continue
+            
         mobile, password = [x.strip() for x in line.split(':', 1)]
         
         mobile = mobile.replace(" ", "").replace("-", "")
@@ -52,7 +53,7 @@ def check():
                     live += 1
                 else:
                     status = "❌ DEAD"
-                    remark = res.get("resMsg", "Unknown error")
+                    remark = res.get("resMsg", "Unknown")
             else:
                 status = "❌ DEAD"
                 remark = f"HTTP {r.status_code}"
