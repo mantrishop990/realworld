@@ -10,13 +10,17 @@
         textarea { width: 100%; height: 400px; padding: 12px; font-family: monospace; font-size: 15px; }
         button { padding: 15px 30px; font-size: 18px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 10px 0; }
         button:hover { background: #218838; }
-        #result { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; line-height: 1.8; }
+        #result { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f0f0f0; }
         .live { color: green; font-weight: bold; }
+        .dead { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>🔥 MantriPK Balance Checker</h1>
-    <textarea id="combos" placeholder="Mobile:Password&#10;917053735397:yourpassword&#10;917053735398:pass123"></textarea><br><br>
+    <textarea id="combos" placeholder="Mobile:Password&#10;917053735397:yourpassword&#10;..."></textarea><br><br>
     
     <button onclick="startCheck()">🚀 Start Checking</button>
     
@@ -43,17 +47,22 @@
             html += `<p><strong>Live Accounts: ${data.live} / ${data.total}</strong></p>`;
 
             if (data.results && data.results.length > 0) {
-                html += "<table border='1' style='width:100%; border-collapse:collapse;'><tr><th>Mobile</th><th>Status</th><th>Balance</th></tr>";
+                html += `<table><tr><th>Mobile</th><th>Status</th><th>Balance</th><th>Remark (API Response)</th></tr>`;
                 data.results.forEach(row => {
-                    html += `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2] || '-'}</td></tr>`;
+                    html += `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                    </tr>`;
                 });
-                html += "</table>";
+                html += `</table>`;
             }
 
             document.getElementById('result').innerHTML = html;
         })
         .catch(err => {
-            document.getElementById('result').innerHTML = "<p style='color:red'>Error occurred while checking.</p>";
+            document.getElementById('result').innerHTML = "<p style='color:red'>Error occurred</p>";
         });
     }
     </script>
