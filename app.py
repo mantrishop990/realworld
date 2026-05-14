@@ -41,7 +41,7 @@ def check():
             r = requests.post(BASE + "login", params=params, headers=headers, timeout=12)
             if r.status_code == 200 and r.json().get("res") == 1:
                 balance = r.json().get("obj", {}).get("balance", 0)
-                results.append([mobile, "LIVE", balance])
+                results.append([mobile, "LIVE", str(balance)])
                 live += 1
             else:
                 results.append([mobile, "DEAD", ""])
