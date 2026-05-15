@@ -62,7 +62,7 @@ def check():
             remark = str(e)
 
         results.append([mobile, status, balance, remark])
-        time.sleep(5)   # Safe delay
+        time.sleep(5)
 
     return jsonify({
         "status": "done",
