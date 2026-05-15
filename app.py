@@ -35,10 +35,12 @@ def check():
         hashed = md5(password)
 
         try:
-            r = requests.post(BASE + "login", 
-                            params={"mobile": mobile, "password": hashed}, 
-                            headers={"User-Agent": "Mozilla/5.0"}, 
-                            timeout=10)
+            r = requests.post(
+                BASE + "login", 
+                params={"mobile": mobile, "password": hashed}, 
+                headers={"User-Agent": "Mozilla/5.0"}, 
+                timeout=12
+            )
             
             if r.status_code == 200:
                 res = r.json()
@@ -51,7 +53,7 @@ def check():
             else:
                 results.append([mobile, "❌ DEAD", "-", f"HTTP {r.status_code}"])
         except Exception as e:
-            results.append([mobile, "❌ ERROR", "-", str(e)[:100]])
+            results.append([mobile, "❌ ERROR", "-", str(e)[:80]])
 
         time.sleep(5)
 
